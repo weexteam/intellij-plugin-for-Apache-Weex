@@ -1,0 +1,24 @@
+#!/bin/bash
+
+function killAllPids() {
+    # get WeexServe pid & swordServe pid
+    weexPid=$(ps x | grep node_modules | grep -v grep | awk '{print $1}')
+    watchPid=$(ps x | grep watch | grep -v grep | awk '{print $1}')
+    nodePid=$(ps x | grep node | grep -v grep | awk '{print $1}')
+
+    allPids=($weexPid $watchPid $nodePid)
+
+    for pid in ${allPids[@]}
+    do
+        if [[ "$pid" !=  $$ ]]; then
+            #statements
+            kill -9 "$pid"
+        fi
+    done
+}
+
+killAllPids
+
+
+
+

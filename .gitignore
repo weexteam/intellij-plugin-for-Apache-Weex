@@ -1,0 +1,8 @@
+out/
+.idea
+classes/
+.gradle/
+.sandbox
+out
+gradle
+build
