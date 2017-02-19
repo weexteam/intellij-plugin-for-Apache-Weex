@@ -58,7 +58,7 @@ public class WeexApplicationSettings implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        return !getForm().getUserSetNpmPath().equals(WeexAppConfig.getINSTANCE().getNoedInstallPath());
+        return !getForm().getUserSetNpmPath().equals(WeexAppConfig.getINSTANCE().getNodeInstallPath());
     }
 
     @Override

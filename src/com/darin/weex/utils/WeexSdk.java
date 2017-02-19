@@ -47,7 +47,7 @@ public class WeexSdk {
 
 
     /**
-     * 本来有三种方式的, 但是现在只剩下一种了, 后续会应该还会拓展
+     * Only One way left
      */
     public enum ServerWay {
         WEEX_TOOL_KIT(WEEX_TOOLKIT_PREVIEW_URL_FOR_WEBVIEW, WEEX_TOOLKIT_JS_URL_FOR_WEBVIEW, WEEX_TOOLKIT_PREVIEW_URL_FOR_QRCODE, WEEX_TOOLKIT_JS_URL_FOR_QRCODE);
@@ -185,7 +185,7 @@ public class WeexSdk {
     public void transform(String weexScript, WeexCmd.CmdExecuteCallback callback) {
         String transformCmd;
         if (false && WeexSdk.getIntance().isWeexToolKitReady()) {
-            transformCmd = WeexAppConfig.getINSTANCE().getNoedInstallPath()
+            transformCmd = WeexAppConfig.getINSTANCE().getNodeInstallPath()
                     + File.separator
                     + "weex "
                     + WeexAppConfig.addDoubleQuotationMarks(weexScript)
@@ -229,7 +229,7 @@ public class WeexSdk {
      */
     private static String addNodePathToCmd(String cmd) {
 
-        String nodePath = WeexAppConfig.addDoubleQuotationMarks(WeexAppConfig.getINSTANCE().getNoedInstallPath() + File.separator + WeexAppConfig.getNodeRealName());
+        String nodePath = WeexAppConfig.addDoubleQuotationMarks(WeexAppConfig.getINSTANCE().getNodeInstallPath() + File.separator + WeexAppConfig.getNodeRealName());
 
         return nodePath + " " + cmd;
     }
@@ -244,9 +244,8 @@ public class WeexSdk {
         stopServe();
         String startServerCmd;
 //        if (false && WeexSdk.getIntance().isWeexToolKitReady()) {
-//            startServerCmd = WeexAppConfig.getINSTANCE().getNoedInstallPath() + File.separator + "weex --port " + generateWeexServerPoat() + " --server " + WeexAppConfig.TEMP_JS_FILE;
+//            startServerCmd = WeexAppConfig.getINSTANCE().getNodeInstallPath() + File.separator + "weex --port " + generateWeexServerPoat() + " --server " + WeexAppConfig.TEMP_JS_FILE;
 //        } else {
-        //todo 自己编译模式
         startServerCmd = addNodePathToCmd(WeexAppConfig.EXE_HTTP_SERVER_FILE) + " -p " + generateWeexServerPoat() + " " + WeexAppConfig.TEMP_JS_FILE;
 //        }
 

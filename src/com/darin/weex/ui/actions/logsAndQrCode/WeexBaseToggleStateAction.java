@@ -136,7 +136,7 @@ public class WeexBaseToggleStateAction extends AnAction {
     private JLabel getQrCodeImage(String url) {
 
         if (StringUtil.isEmpty(url)) {
-            url = "请稍等, 正在刷新二维码, 请再次扫码";
+            url = "Please reScan this qrCode again";
         }
         ImageIcon ic = new ImageIcon();
 

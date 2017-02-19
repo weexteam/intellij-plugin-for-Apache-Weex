@@ -195,10 +195,10 @@ public class WeexAppConfig extends Properties {
     void init() {
         VirtualFileManager.getInstance().addVirtualFileListener(weexFileChangeAdapter);
 
-        if (isNodePathValid(getNoedInstallPath())) {
-            setNoedInstallPath(getNoedInstallPath());
+        if (isNodePathValid(getNodeInstallPath())) {
+            setNodeInstallPath(getNodeInstallPath());
         } else if (isNodePathValid(getNodeRealPath())) {
-            setNoedInstallPath(getNodeRealPath());
+            setNodeInstallPath(getNodeRealPath());
         }
 
 
@@ -244,12 +244,12 @@ public class WeexAppConfig extends Properties {
         return Float.valueOf(getProperty(KEY_SPLIT_PROPORTION, "0.5"));
     }
 
-    public String getNoedInstallPath() {
+    public String getNodeInstallPath() {
         return getProperty(KEY_NOED_INSTALL_PATH, getNodeRealPath());
     }
 
-    public void setNoedInstallPath(String path) {
-        setPropertyAndSave(KEY_NOED_INSTALL_PATH, addDoubleQuotationMarks(cutUselessMark(path)));
+    public void setNodeInstallPath(String path) {
+        setPropertyAndSave(KEY_NOED_INSTALL_PATH, path);
     }
 
 
@@ -337,8 +337,8 @@ public class WeexAppConfig extends Properties {
     private static String mCurrentIp = null;
 
     /**
-     * @param forceUpdate 强制重新获取本机 ip
-     * @return 本机 ip
+     * @param forceUpdate force to get local ip
+     * @return local ip
      */
     public String getLocalHostIP(boolean forceUpdate) {
         long currentTime = System.currentTimeMillis();

@@ -42,30 +42,11 @@ public class WeexFxPreviewEditor extends UserDataHolderBase implements TextEdito
     private final TextEditorProvider mMainEditorProvider = new PsiAwareTextEditorProvider();
 
     private final Alarm mUpdatePrevewWidthAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD, this);
-    /**
-     * The {@link Document} previewed in this editor.
-     */
-
     private VirtualFile mCurrentModifyFile;
-    /**
-     * 渲染组建
-     */
     private JPanel mPreviewPanel;
-    /**
-     * 通过 {@link FileEditor} getComponent 来获取编辑框的组建
-     */
     private FileEditor mMainEditor;
-    /**
-     * webview 容器
-     */
     private JFXPanel mWebviewContainer;
-    /**
-     * editor 和 preview 容器
-     */
     private JBSplitter splitter;
-    /**
-     * 最终的容器, 包括 editor,preview,toolbar
-     */
     private JPanel mFinalView;
     private SplitEditorLayout mySplitEditorLayout = SplitEditorLayout.SPLIT;
     private WeexSplitEditorToolbar myToolbarWrapper;

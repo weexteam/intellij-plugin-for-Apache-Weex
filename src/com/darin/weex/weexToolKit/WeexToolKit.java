@@ -83,7 +83,7 @@ public class WeexToolKit {
             wsPort = generateWSPort(processId);
 
         try {
-            String cmd = WeexAppConfig.getINSTANCE().getNoedInstallPath() + File.separator + "weex --port %d --wsport %d --host %s --qr %s";
+            String cmd = WeexAppConfig.getINSTANCE().getNodeInstallPath() + File.separator + "weex --port %d --wsport %d --host %s --qr %s";
 
             String realCmd = String.format(cmd, prePort, wsPort, WeexAppConfig.getINSTANCE().getLocalHostIP(false), filePath);
 

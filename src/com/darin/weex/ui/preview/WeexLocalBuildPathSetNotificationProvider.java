@@ -27,7 +27,6 @@ public class WeexLocalBuildPathSetNotificationProvider extends EditorNotificatio
     }
 
 
-    //TODO 这里后续要改成只能设置 node 运行环境
 
     @Nullable
     @Override
@@ -38,14 +37,14 @@ public class WeexLocalBuildPathSetNotificationProvider extends EditorNotificatio
         }
 
 
-        if (WeexAppConfig.getINSTANCE().isNodePathValid(WeexAppConfig.getINSTANCE().getNoedInstallPath())) {
+        if (WeexAppConfig.getINSTANCE().isNodePathValid(WeexAppConfig.getINSTANCE().getNodeInstallPath())) {
             return null;
         }
 
         final EditorNotificationPanel panel = new EditorNotificationPanel();
-        panel.setText("请设置 node 环境");
+        panel.setText("Please set node env");
 
-        panel.createActionLabel("请设置 node 环境", new Runnable() {
+        panel.createActionLabel("Please set node env", new Runnable() {
             @Override
             public void run() {
                 String choosePath = WeexUtils.chooseNpmPath(panel);
@@ -55,7 +54,7 @@ public class WeexLocalBuildPathSetNotificationProvider extends EditorNotificatio
                 }
 
                 if (WeexAppConfig.getINSTANCE().isNodePathValid(choosePath)) {
-                    WeexAppConfig.getINSTANCE().setNoedInstallPath(choosePath);
+                    WeexAppConfig.getINSTANCE().setNodeInstallPath(choosePath);
                     WeexSdk.getIntance().startServe(null);
                 }
 

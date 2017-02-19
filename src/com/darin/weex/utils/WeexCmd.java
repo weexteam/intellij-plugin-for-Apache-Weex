@@ -38,10 +38,10 @@ public class WeexCmd {
      */
     public static String[] getEnv() {
 
-        if (!StringUtil.isEmpty(mNpmInstallPath) && mNpmInstallPath.equals(WeexAppConfig.getINSTANCE().getNoedInstallPath()))
+        if (!StringUtil.isEmpty(mNpmInstallPath) && mNpmInstallPath.equals(WeexAppConfig.getINSTANCE().getNodeInstallPath()))
             return mEnvironment;
 
-        mNpmInstallPath = WeexAppConfig.getINSTANCE().getNoedInstallPath();
+        mNpmInstallPath = WeexAppConfig.getINSTANCE().getNodeInstallPath();
 
         final Map<String, String> env = System.getenv();
         mEnvironment = new String[env.size()];
@@ -53,7 +53,7 @@ public class WeexCmd {
             String value = entry.getValue();
             String key = entry.getKey();
             if (key.equals("PATH"))
-                value += ":" + WeexAppConfig.getINSTANCE().getNoedInstallPath();
+                value += ":" + WeexAppConfig.getINSTANCE().getNodeInstallPath();
             mEnvironment[i] = key + "=" + value;
             i++;
         }

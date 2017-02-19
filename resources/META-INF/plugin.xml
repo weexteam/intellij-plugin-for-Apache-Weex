@@ -9,23 +9,9 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>JavaScript</depends>
 
-    <description><![CDATA[
-  <ul>
-    <li>支持自动实时将Weex编译成JavaScript bundle。</li>
-    <li>能够在插件运行时启动本地服务，实时的将修改的内容渲染成HTML5，并显示出来</li>
-    <li>支持编译带自定义组件的 Weex 源码，不过自定义组件和当前组件必须在同一目录</li>
-    <li>支持以二维码的方式显示渲染内容，可用手淘或者WeexPlayground进行扫描查看渲染内容</li>
-    <li>支持Webstorm，Intellij Idea，Android Studio等Intellij旗下产品</li>
-    <li>JavaScript的语法提示以及高亮</li>
- </ul>
-]]></description>
+    <description>></description>
 
-    <change-notes><![CDATA[
-  1. 在使用上更加便捷<br>
-2. 支持语法提示和高亮<br>
-3. 渲染速度加快<br>
-4. 支持输出 weex 文件编译结果</p>
-]]>
+    <change-notes>
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->

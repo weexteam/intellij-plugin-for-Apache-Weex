@@ -17,7 +17,7 @@ public class WeexPreviewSettings {
     private JTextField mNodeInstallPath;
     private JButton mNodePathSelectButton;
     private JLabel mNodePathJLable;
-    private String mNodeInstallPathString = WeexAppConfig.getINSTANCE().getNoedInstallPath();
+    private String mNodeInstallPathString = WeexAppConfig.getINSTANCE().getNodeInstallPath();
 
 
 
@@ -61,13 +61,13 @@ public class WeexPreviewSettings {
         }
 
 
-        WeexAppConfig.getINSTANCE().setNoedInstallPath(npmPath);
+        WeexAppConfig.getINSTANCE().setNodeInstallPath(npmPath);
 
     }
 
     void reset() {
 
-        mNodeInstallPathString = WeexAppConfig.getINSTANCE().getNoedInstallPath();
+        mNodeInstallPathString = WeexAppConfig.getINSTANCE().getNodeInstallPath();
         /**
          * server editor
          *

@@ -157,7 +157,7 @@ public class TransformTasks implements Disposable {
 
     private void runLater(Runnable runnable) {
         /**
-         * 这里是 jfx 线程
+         * jfx thread
          */
         Platform.runLater(runnable);
     }
