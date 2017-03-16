@@ -6,11 +6,11 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.text.StringUtil
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
+import java.io.*
 import java.util.*
 import javax.swing.JComponent
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
 
 /**
@@ -35,6 +35,76 @@ object WeexUtils {
             f.close()
         } catch (e: IOException) {
             e.printStackTrace()
+        }
+
+    }
+
+    /**
+     * unzip zip file
+
+     * @param zip        the zip input stream
+     * *
+     * @param outputPath outputPath of zip files
+     * *
+     * @return success or not
+     */
+    fun unzip(zip: InputStream, outputPath: String): Boolean {
+        var isUnzipOk = true
+        try {
+            val Zin = ZipInputStream(zip)//输入源zip路径
+            val Bin = BufferedInputStream(Zin)
+            var outputFile: File
+            var entry: ZipEntry? = Zin.nextEntry
+            while ((entry) != null) {
+                outputFile = File(outputPath, entry.name)
+                if (entry.isDirectory) {
+                    entry = Zin.nextEntry
+                    continue
+                } else {
+                    val parent = File(outputFile.parent)
+                    if (!parent.exists())
+                        if (!parent.mkdirs()) {
+                            return false
+                        }
+                }
+
+
+                val out = FileOutputStream(outputFile)
+                val Bout = BufferedOutputStream(out)
+                var b: Int = Bin.read()
+                while ((b) != -1) {
+                    Bout.write(b)
+                    b = Bin.read()
+                }
+                Bout.close()
+                out.close()
+                entry = Zin.nextEntry
+            }
+            Bin.close()
+            Zin.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            isUnzipOk = false
+        }
+
+        return isUnzipOk
+    }
+
+    /**
+     * unzip zip file
+
+     * @param zip        the unzip file's path
+     * *
+     * @param outputPath outputPath of zip files
+     * *
+     * @return success or not
+     */
+    fun unzip(zip: String, outputPath: String): Boolean {
+        try {
+            return unzip(FileInputStream(zip), outputPath)
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+            return false
         }
 
     }

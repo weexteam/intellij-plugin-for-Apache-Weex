@@ -11,6 +11,7 @@ import com.darin.weex.utils.WeexSdk
 import com.darin.weex.utils.WeexUtils
 import com.darin.weex.utils.WeexUtils.isWindows
 import com.darin.weex.utils.WeexUtils.startCheckServerStatus
+import com.darin.weex.utils.WeexUtils.unzip
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.io.FileUtil
@@ -21,6 +22,8 @@ import java.io.*
 import java.net.InetAddress
 import java.util.*
 import java.util.regex.Pattern
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
 /**
  * Created by darin on 5/23/16.
@@ -65,23 +68,28 @@ object WeexAppConfig : Properties() {
 
         CONFIG_PATH = PathManager.getConfigPath() + File.separator + "options/weex.properties"
 
-        val weex_tool = File(DEFAULT_CONFIG_PATH)
-        if (weex_tool.exists())
-            FileUtil.delete(weex_tool)
+        Thread(object : Runnable {
+            override fun run() {
+                val weex_tool = File(DEFAULT_CONFIG_PATH)
+                if (weex_tool.exists())
+                    FileUtil.delete(weex_tool)
 
 
-        weex_tool.mkdirs()
+                weex_tool.mkdirs()
 
-        initOutputPath()
-        /**
-         * un zip render && transformer && server
-         */
+                initOutputPath()
+                /**
+                 * un zip render && transformer && server
+                 */
 
-        ZipUtil.extract(File(transformerFilePath), File(WeexAppConfig.DEFAULT_CONFIG_PATH), null, true)
+                WeexUtils.unzip(this.javaClass.getResourceAsStream(transformerFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
 
-        ZipUtil.extract(File(renderFilePath), File(WeexAppConfig.DEFAULT_CONFIG_PATH), null, true)
+                WeexUtils.unzip(this.javaClass.getResourceAsStream(renderFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
 
-        ZipUtil.extract(File(serverFilePath), File(WeexAppConfig.DEFAULT_CONFIG_PATH), null)
+                WeexUtils.unzip(this.javaClass.getResourceAsStream(serverFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
+
+            }
+        }).start()
 
 
         //setPermission();

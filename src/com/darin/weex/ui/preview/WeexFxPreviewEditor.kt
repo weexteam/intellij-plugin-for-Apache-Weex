@@ -73,15 +73,15 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
         splitter = JBSplitter(false, WeexAppConfig.splitProportion, 0.15f, 0.85f)
 
         initWebview(webviewWidth, webviewHeight)
-        splitter!!.splitterProportionKey = ""
+        splitter.splitterProportionKey = ""
 
-        splitter!!.firstComponent = mMainEditor!!.component
-        splitter!!.secondComponent = mPreviewPanel
-        splitter!!.addPropertyChangeListener(PropertyChangeListener {
+        splitter.firstComponent = mMainEditor!!.component
+        splitter.secondComponent = mPreviewPanel
+        splitter.addPropertyChangeListener(PropertyChangeListener {
             if (mUpdatePreviewWidthRunnable != null)
                 mUpdatePreviewWidthAlarm.cancelRequest(mUpdatePreviewWidthRunnable!!)
 
-            val second = splitter!!.secondComponent
+            val second = splitter.secondComponent
             val width = second.width
             val height = second.height
 
@@ -97,7 +97,7 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
 
                     initWebview(width, height)
 
-                    WeexAppConfig.splitProportion = (splitter!!.proportion)
+                    WeexAppConfig.splitProportion = (splitter.proportion)
                     WeexAppConfig.webviewHeight = (height)
                     WeexAppConfig.webviewWidth = (width)
 
@@ -107,10 +107,10 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
             if (!mUpdatePreviewWidthAlarm.isDisposed)
                 mUpdatePreviewWidthAlarm.addRequest(mUpdatePreviewWidthRunnable!!, 20L)
         })
-        myToolbarWrapper = WeexSplitEditorToolbar(splitter!!)
+        myToolbarWrapper = WeexSplitEditorToolbar(splitter)
         mFinalView!!.remove(mMainEditor!!.component)
         mFinalView!!.add(myToolbarWrapper!!, BorderLayout.NORTH)
-        mFinalView!!.add(splitter!!, BorderLayout.CENTER)
+        mFinalView!!.add(splitter, BorderLayout.CENTER)
         mFinalView!!.updateUI()
         listerner = object : WeexUtils.onLocalServerStatusChangeListener {
             override fun onLocalServerStatusChange(isOn: Boolean) {
