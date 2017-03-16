@@ -1,10 +1,17 @@
-plugins {
-    id 'org.jetbrains.intellij' version "0.1.10"
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.2.5"
+    }
 }
 
+apply plugin: "org.jetbrains.intellij"
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'org.jetbrains.intellij'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -12,11 +19,12 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
     mavenCentral()
-
     maven {
         url "https://raw.github.com/embarkmobile/zxing-android-minimal/mvn-repo/maven-repository/"
     }
 }
+
+
 
 intellij {
     version = 'IU-163.10154.41'
@@ -25,7 +33,6 @@ intellij {
     pluginName = 'Weex'
     updateSinceUntilBuild = false
 }
-
 sourceSets {
     main.java.srcDirs = ['src', 'gen']
     main.resources.srcDir 'resources'
@@ -33,6 +40,7 @@ sourceSets {
     test.java.srcDir 'test/src'
     test.resources.srcDir 'test/data'
 }
+
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
