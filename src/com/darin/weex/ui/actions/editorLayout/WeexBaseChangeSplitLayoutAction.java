@@ -53,7 +53,7 @@ public class WeexBaseChangeSplitLayoutAction extends AnAction implements DumbAwa
         if (editor instanceof WeexFxPreviewEditor) {
             return (WeexFxPreviewEditor) editor;
         } else {
-            return WeexFxPreviewEditor.PARENT_SPLIT_KEY.get(editor);
+            return WeexFxPreviewEditor.Companion.getPARENT_SPLIT_KEY().get(editor);
         }
     }
 }

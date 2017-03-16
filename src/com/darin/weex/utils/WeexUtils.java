@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static com.darin.weex.utils.WeexCmd.SyncRunCmd;
-
 
 /**
  * Created by darin on 5/23/16.
@@ -32,10 +30,10 @@ public class WeexUtils {
      * @param msg
      */
     private static void savelocal(String msg) {
-        if (!WeexAppConfig.isDebug)
+        if (!WeexAppConfig.INSTANCE.isDebug())
             return;
         try {
-            FileWriter f = new FileWriter(new File(WeexAppConfig.DEFAULT_CONFIG_PATH, "debug.txt"), true);
+            FileWriter f = new FileWriter(new File(WeexAppConfig.INSTANCE.getDEFAULT_CONFIG_PATH(), "debug.txt"), true);
             f.write(msg);
             f.close();
         } catch (IOException e) {
@@ -55,10 +53,10 @@ public class WeexUtils {
 
 
         if (WeexUtils.isWindows()) {
-            String result = SyncRunCmd("netstat -aon", false, null);
+            String result = WeexCmd.INSTANCE.SyncRunCmd("netstat -aon", false, null);
             return result.contains(String.valueOf(port));
         } else {
-            return !StringUtil.isEmpty(SyncRunCmd("lsof -i tcp:" + port, false, null));
+            return !StringUtil.isEmpty(WeexCmd.INSTANCE.SyncRunCmd("lsof -i tcp:" + port, false, null));
         }
 
     }
@@ -70,7 +68,7 @@ public class WeexUtils {
      * @return true means local server is on
      */
     public static boolean isServerOn() {
-        return !WeexUtils.isWindows() && SyncRunCmd("lsof -i tcp:12580", false, null).contains("TCP *:12580 (LISTEN)");
+        return !WeexUtils.isWindows() &&  WeexCmd.INSTANCE.SyncRunCmd("lsof -i tcp:12580", false, null).contains("TCP *:12580 (LISTEN)");
     }
 
 
@@ -148,8 +146,8 @@ public class WeexUtils {
         if (StringUtil.isEmpty(path))
             return null;
 
-        if (!WeexAppConfig.getINSTANCE().isNodePathValid(path)) {
-            WeexShow.showMessage("the path is invalid");
+        if (!WeexAppConfig.INSTANCE.isNodePathValid(path)) {
+            WeexShow.INSTANCE.showMessage("the path is invalid");
             return null;
         }
         return path;
@@ -192,8 +190,8 @@ public class WeexUtils {
                         e.printStackTrace();
                     }
 
-                    if (WeexSdk.getIntance().isWeexToolKitReady()) {
-                        currentStatus = WeexUtils.isPortHasBeenUsed(WeexSdk.getIntance().getDefaultWeexServerPort());
+                    if (WeexSdk.INSTANCE.isWeexToolKitReady()) {
+                        currentStatus = WeexUtils.isPortHasBeenUsed(WeexSdk.INSTANCE.getDefaultWeexServerPort());
                     } else {
                         currentStatus = WeexUtils.isServerOn();
                     }
@@ -253,7 +251,7 @@ public class WeexUtils {
 
 
     public static void println(Object msg) {
-        if (WeexAppConfig.isDebug && msg != null)
+        if (WeexAppConfig.INSTANCE.isDebug() && msg != null)
             System.out.println(msg);
     }
 

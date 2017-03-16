@@ -34,6 +34,6 @@ public class WeexFileChangeAdapter extends VirtualFileAdapter {
         }
         //transform
         WeexUtils.println("Will transform : " + event.getFile().getPath());
-        TransformTasks.instance.addTransformTask(event.getFile());
+        TransformTasks.Companion.getInstance().addTransformTask(event.getFile());
     }
 }

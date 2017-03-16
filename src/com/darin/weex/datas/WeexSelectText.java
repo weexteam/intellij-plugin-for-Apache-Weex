@@ -40,7 +40,7 @@ public class WeexSelectText {
             text = getTextFromFile();
         } catch (IOException ignore) {
             ignore.printStackTrace();
-            WeexShow.showPopUp(ignore.toString());
+            WeexShow.INSTANCE.showPopUp(ignore.toString());
         }
 
         return text;

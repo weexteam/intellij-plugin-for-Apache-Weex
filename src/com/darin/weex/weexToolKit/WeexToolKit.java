@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.darin.weex.utils.WeexCmd.getEnv;
-
 /**
  * Created by darin on 7/14/16.
  */
@@ -83,12 +81,12 @@ public class WeexToolKit {
             wsPort = generateWSPort(processId);
 
         try {
-            String cmd = WeexAppConfig.getINSTANCE().getNodeInstallPath() + File.separator + "weex --port %d --wsport %d --host %s --qr %s";
+            String cmd = WeexAppConfig.INSTANCE.getNodeInstallPath() + File.separator + "weex --port %d --wsport %d --host %s --qr %s";
 
-            String realCmd = String.format(cmd, prePort, wsPort, WeexAppConfig.getINSTANCE().getLocalHostIP(false), filePath);
+            String realCmd = String.format(cmd, prePort, wsPort, WeexAppConfig.INSTANCE.getLocalHostIP(false), filePath);
 
             WeexUtils.println(realCmd);
-            process = Runtime.getRuntime().exec(realCmd, getEnv());
+            process = Runtime.getRuntime().exec(realCmd);
 
         } catch (IOException e) {
             e.printStackTrace();
