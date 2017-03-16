@@ -74,10 +74,10 @@ public class WeexToolKit {
 
         Process process = null;
 
-        if (WeexUtils.isPortHasBeenUsed(prePort))
+        if (WeexUtils.INSTANCE.isPortHasBeenUsed(prePort))
             prePort = generatePreviewPort(processId);
 
-        if (WeexUtils.isPortHasBeenUsed(wsPort))
+        if (WeexUtils.INSTANCE.isPortHasBeenUsed(wsPort))
             wsPort = generateWSPort(processId);
 
         try {
@@ -85,7 +85,7 @@ public class WeexToolKit {
 
             String realCmd = String.format(cmd, prePort, wsPort, WeexAppConfig.INSTANCE.getLocalHostIP(false), filePath);
 
-            WeexUtils.println(realCmd);
+            WeexUtils.INSTANCE.println(realCmd);
             process = Runtime.getRuntime().exec(realCmd);
 
         } catch (IOException e) {
@@ -93,13 +93,13 @@ public class WeexToolKit {
         }
 
         if (process == null) {
-            WeexUtils.println("doStartWeex and then process is null");
+            WeexUtils.INSTANCE.println("doStartWeex and then process is null");
             return;
         }
 
 
-        WeexUtils.println("httpport: " + prePort);
-        WeexUtils.println("wsPort: " + wsPort);
+        WeexUtils.INSTANCE.println("httpport: " + prePort);
+        WeexUtils.INSTANCE.println("wsPort: " + wsPort);
 
         weexProcess = new WeexProcess.Builder(process).previewServerPort(prePort).webServicePort(wsPort).weexFileName(filePath).build();
 
@@ -115,7 +115,7 @@ public class WeexToolKit {
 
     private long generatePreviewPort(long threadId) {
         long port = 8000 + threadId;
-        while (WeexUtils.isPortHasBeenUsed(port)) {
+        while (WeexUtils.INSTANCE.isPortHasBeenUsed(port)) {
             port += 50;
         }
         return port;
@@ -123,7 +123,7 @@ public class WeexToolKit {
 
     private long generateWSPort(long threadId) {
         long port = 9000 + threadId;
-        while (WeexUtils.isPortHasBeenUsed(port)) {
+        while (WeexUtils.INSTANCE.isPortHasBeenUsed(port)) {
             port += 50;
         }
         return port;

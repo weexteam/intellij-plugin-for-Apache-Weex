@@ -4,14 +4,11 @@ import com.darin.weex.WeexAppConfig
 import com.darin.weex.ui.preview.WeexFxPreviewEditor
 import com.darin.weex.utils.WeexSdk
 import com.darin.weex.utils.WeexUtils
+import com.darin.weex.utils.WeexUtils.onLocalServerStatusChangeListener
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.actionSystem.Presentation
-import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.util.IconLoader
-
-import javax.swing.*
 
 /**
  * Created by darin on 5/25/16.
@@ -26,17 +23,20 @@ class WeexToogleStartServe : AnAction() {
 
         val presentation = this.templatePresentation
         // start a thread to update the icon
-        val listerner = WeexUtils.onLocalServerStatusChangeListener { isOn ->
-            if (isOn) {
-                presentation.icon = server_on
-                presentation.text = "The local Server is on, Click to Restart the server"
-            } else {
-                presentation.icon = server_off
-                presentation.text = "The local Server is off, Click to Start the server"
+        val listener = object : onLocalServerStatusChangeListener {
+            override fun onLocalServerStatusChange(isOn: Boolean) {
+                if (isOn) {
+                    presentation.icon = server_on
+                    presentation.text = "The local Server is on, Click to Restart the server"
+                } else {
+                    presentation.icon = server_off
+                    presentation.text = "The local Server is off, Click to Start the server"
+                }
             }
+
         }
 
-        WeexUtils.addServerChangeListener(listerner)
+        WeexUtils.addServerChangeListener(listener)
     }
 
     override fun actionPerformed(anActionEvent: AnActionEvent) {
@@ -49,7 +49,7 @@ class WeexToogleStartServe : AnAction() {
         else
             WeexUtils.println("NULLLLLLLL")
 
-        WeexUtils.println(WeexUtils.isServerOn())
+        WeexUtils.println(WeexUtils.isServerOn)
 
         if (WeexSdk.isWeexToolKitReady) {
             WeexSdk.startServe(null)

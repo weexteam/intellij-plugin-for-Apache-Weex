@@ -23,10 +23,10 @@ class WeexPreviewSettings internal constructor() {
 
     init {
         mNodePathSelectButton!!.addActionListener {
-            val choosePath = WeexUtils.chooseNpmPath(component)
+            val choosePath = WeexUtils.chooseNpmPath(component!!)
             if (!StringUtil.isEmpty(choosePath)) {
                 mNodeInstallPath!!.text = choosePath
-                mNodeInstallPathString = choosePath
+                mNodeInstallPathString = choosePath!!
                 mNodeInstallPath!!.requestFocus()
             }
         }

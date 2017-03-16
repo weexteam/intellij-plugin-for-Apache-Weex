@@ -112,28 +112,31 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
         mFinalView!!.add(myToolbarWrapper!!, BorderLayout.NORTH)
         mFinalView!!.add(splitter!!, BorderLayout.CENTER)
         mFinalView!!.updateUI()
-        listerner = WeexUtils.onLocalServerStatusChangeListener { isOn ->
-            ApplicationManager.getApplication().invokeLater {
-                /**
-                 * update the server button
-                 */
-                /**
-                 * update the server button
-                 */
-                /**
-                 * update the server button
-                 */
+        listerner = object : WeexUtils.onLocalServerStatusChangeListener {
+            override fun onLocalServerStatusChange(isOn: Boolean) {
+                ApplicationManager.getApplication().invokeLater {
+                    /**
+                     * update the server button
+                     */
+                    /**
+                     * update the server button
+                     */
+                    /**
+                     * update the server button
+                     */
 
-                /**
-                 * update the server button
-                 */
-                mFinalView!!.remove(myToolbarWrapper!!)
-                myToolbarWrapper = WeexSplitEditorToolbar(splitter!!)
-                mFinalView!!.add(myToolbarWrapper!!, BorderLayout.NORTH)
-                mFinalView!!.updateUI()
+                    /**
+                     * update the server button
+                     */
+                    mFinalView!!.remove(myToolbarWrapper!!)
+                    myToolbarWrapper = WeexSplitEditorToolbar(splitter!!)
+                    mFinalView!!.add(myToolbarWrapper!!, BorderLayout.NORTH)
+                    mFinalView!!.updateUI()
+                }
+                if (isOn)
+                    reLoad()
             }
-            if (isOn)
-                reLoad()
+
         }
         mJfxInitOk = true
 

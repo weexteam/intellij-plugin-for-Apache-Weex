@@ -43,7 +43,7 @@ class WeexLocalBuildPathSetNotificationProvider : EditorNotifications.Provider<E
                 return@Runnable
             }
 
-            if (WeexAppConfig.isNodePathValid(choosePath)) {
+            if (WeexAppConfig.isNodePathValid(choosePath!!)) {
                 WeexAppConfig.nodeInstallPath = choosePath
                 WeexSdk.startServe(null)
             }

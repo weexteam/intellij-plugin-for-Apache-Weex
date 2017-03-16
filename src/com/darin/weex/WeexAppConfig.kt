@@ -16,6 +16,7 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.util.io.ZipUtil
 import java.io.*
 import java.net.InetAddress
 import java.util.*
@@ -76,11 +77,11 @@ object WeexAppConfig : Properties() {
          * un zip render && transformer && server
          */
 
-        WeexUtils.unzip(this.javaClass.getResourceAsStream(transformerFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
+        ZipUtil.extract(File(transformerFilePath), File(WeexAppConfig.DEFAULT_CONFIG_PATH), null, true)
 
-        WeexUtils.unzip(this.javaClass.getResourceAsStream(renderFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
+        ZipUtil.extract(File(renderFilePath), File(WeexAppConfig.DEFAULT_CONFIG_PATH), null, true)
 
-        WeexUtils.unzip(this.javaClass.getResourceAsStream(serverFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
+        ZipUtil.extract(File(serverFilePath), File(WeexAppConfig.DEFAULT_CONFIG_PATH), null)
 
 
         //setPermission();
@@ -348,7 +349,7 @@ object WeexAppConfig : Properties() {
     private val DEFAULT_NODE_PATH = "/usr/local/bin"
     private val DEFAULT_NODE_PATH_WIN = "C:\\Program Files\\nodejs"
 
-    val defaultNodeInstallPath = if (isWindows()) DEFAULT_NODE_PATH else DEFAULT_NODE_PATH_WIN
+    val defaultNodeInstallPath = if (isWindows) DEFAULT_NODE_PATH else DEFAULT_NODE_PATH_WIN
 
     private val NODE_NAME = "node"
     private val NODE_NAME_WIN = NODE_NAME + ".exe"
@@ -378,13 +379,13 @@ object WeexAppConfig : Properties() {
      * @return node in Mac or linux, node.exe in Windows
      */
     val nodeRealName: String
-        get() = if (WeexUtils.isWindows()) WeexAppConfig.NODE_NAME_WIN else WeexAppConfig.NODE_NAME
+        get() = if (WeexUtils.isWindows) WeexAppConfig.NODE_NAME_WIN else WeexAppConfig.NODE_NAME
 
     /**
      * @return "/usr/local/bin" or "C:\\Program Files\\nodejs"
      */
     val nodeRealPath: String
-        get() = if (WeexUtils.isWindows()) WeexAppConfig.DEFAULT_NODE_PATH_WIN else WeexAppConfig.DEFAULT_NODE_PATH
+        get() = if (WeexUtils.isWindows) WeexAppConfig.DEFAULT_NODE_PATH_WIN else WeexAppConfig.DEFAULT_NODE_PATH
 
     /**
      * The cmd will not be executed in Windows if one parameter of the cmd has space
@@ -394,7 +395,7 @@ object WeexAppConfig : Properties() {
      * @return cmd parameter with Double quotation  such as make C:\\Program Files\\nodejs\\node.exe ->  "C:\\Program Files\\nodejs\\node.exe"
      */
     fun addDoubleQuotationMarks(string: String): String {
-        if (WeexUtils.isWindows() && !string.startsWith("\""))
+        if (WeexUtils.isWindows && !string.startsWith("\""))
             return "\"" + string + "\""
         return string
     }

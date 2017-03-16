@@ -13,8 +13,6 @@ import java.util.concurrent.Future
  * Created by darin on 10/9/16.
  */
 object WeexSdk {
-
-
     private var weexServerThread: Future<*>? = null
     var defaultWeexServerPort = 5678
         private set
@@ -27,7 +25,7 @@ object WeexSdk {
     /**
      * Only One way left
      */
-    enum class ServerWay private constructor(val previewUrl: String, val jsUrl: String, val qrCodePreviewUrl: String, val qrCodeJsUrl: String) {
+    enum class ServerWay constructor(val previewUrl: String, val jsUrl: String, val qrCodePreviewUrl: String, val qrCodeJsUrl: String) {
         WEEX_TOOL_KIT(WEEX_TOOLKIT_PREVIEW_URL_FOR_WEBVIEW, WEEX_TOOLKIT_JS_URL_FOR_WEBVIEW, WEEX_TOOLKIT_PREVIEW_URL_FOR_QRCODE, WEEX_TOOLKIT_JS_URL_FOR_QRCODE)
     }
 
@@ -51,14 +49,9 @@ object WeexSdk {
      * *
      * @return current building method
      */
-    fun getCurrentServerWay(reuse: Boolean): ServerWay? {
-
-        if (reuse && mCurrentServerWay != null)
-            return mCurrentServerWay
-
-        mCurrentServerWay = ServerWay.WEEX_TOOL_KIT
-
-        return mCurrentServerWay
+    fun getCurrentServerWay(reuse: Boolean): ServerWay {
+        //Only one way left
+        return ServerWay.WEEX_TOOL_KIT
     }
 
     val isWeexToolKitReady: Boolean
@@ -77,10 +70,10 @@ object WeexSdk {
     fun getPreviewUrl(filePath: String, isWebview: Boolean, startHotReloadCallback: WeexToolKit.StartHotReloadCallback?): String? {
         WeexUtils.println("getPreviewUrl" + filePath)
         val name = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf(".we"))
-        when (mCurrentServerWay) {
+        when (getCurrentServerWay(false)) {
             WeexSdk.ServerWay.WEEX_TOOL_KIT -> {
                 if (isWebview)
-                    return String.format(mCurrentServerWay!!.previewUrl, WeexAppConfig.getLocalHostIP(false), defaultWeexServerPort, name)
+                    return String.format(getCurrentServerWay(false).previewUrl, WeexAppConfig.getLocalHostIP(false), defaultWeexServerPort, name)
 
                 //HotReload
                 val process = WeexToolKit.getInstance().weexProcess
@@ -113,10 +106,10 @@ object WeexSdk {
         var ip = LOCAL_IP
         if (useHostIp)
             ip = WeexAppConfig.getLocalHostIP(false)
-        when (mCurrentServerWay) {
+        when (getCurrentServerWay(false)) {
             WeexSdk.ServerWay.WEEX_TOOL_KIT -> {
                 if (isStatic)
-                    return String.format(mCurrentServerWay!!.jsUrl, ip, defaultWeexServerPort, name)
+                    return String.format(getCurrentServerWay(true).jsUrl, ip, defaultWeexServerPort, name)
 
                 val process = WeexToolKit.getInstance().weexProcess
 
@@ -125,7 +118,7 @@ object WeexSdk {
                     return null
                 }
 
-                return String.format(mCurrentServerWay!!.qrCodeJsUrl, ip, process.previewServerPort, name, process.webServicePort)
+                return String.format(getCurrentServerWay(true).qrCodeJsUrl, ip, process.previewServerPort, name, process.webServicePort)
             }
             else -> return null
         }
@@ -171,11 +164,10 @@ object WeexSdk {
      */
     fun startServe(callback: WeexCmd.CmdExecuteCallback?) {
         stopServe()
-        val startServerCmd: String
+        val startServerCmd: String = addNodePathToCmd(WeexAppConfig.EXE_HTTP_SERVER_FILE) + " -p " + generateWeexServerPoat() + " " + WeexAppConfig.TEMP_JS_FILE
         //        if (false && WeexSdk.getInstance().isWeexToolKitReady()) {
         //            startServerCmd = WeexAppConfig.getINSTANCE().getNodeInstallPath() + File.separator + "weex --port " + generateWeexServerPoat() + " --server " + WeexAppConfig.TEMP_JS_FILE;
         //        } else {
-        startServerCmd = addNodePathToCmd(WeexAppConfig.EXE_HTTP_SERVER_FILE) + " -p " + generateWeexServerPoat() + " " + WeexAppConfig.TEMP_JS_FILE
         //        }
 
         WeexUtils.println(startServerCmd)
@@ -208,7 +200,7 @@ object WeexSdk {
         }
 
         WeexCmd.shutdown()
-        if (!WeexUtils.isWindows()) {
+        if (!WeexUtils.isWindows) {
             val path = WeexAppConfig.DEFAULT_CONFIG_PATH
             WeexAppConfig.initStopServeShell(false)
 
@@ -225,9 +217,6 @@ object WeexSdk {
 
     private val WEEX_TOOLKIT_JS_URL_FOR_QRCODE = "http://%s:%d/weex_tmp/h5_render/%s.js?wsport=%d"
     private val WEEX_TOOLKIT_PREVIEW_URL_FOR_QRCODE = "http://%s:%d/weex_tmp/h5_render/?hot-reload_controller&page=%s.js&loader=xhr"
-
-
-    private var mCurrentServerWay: ServerWay? = null
 
 
     /**
