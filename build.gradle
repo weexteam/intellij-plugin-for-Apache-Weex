@@ -1,15 +1,19 @@
 buildscript {
+    ext.kotlin_version = '1.1.1'
     repositories {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+        mavenCentral()
     }
     dependencies {
         classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.2.5"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 apply plugin: "org.jetbrains.intellij"
+apply plugin: 'kotlin'
 apply plugin: 'java'
 apply plugin: 'idea'
 
@@ -39,6 +43,7 @@ sourceSets {
 
     test.java.srcDir 'test/src'
     test.resources.srcDir 'test/data'
+    main.java.srcDirs += 'src/main/kotlin'
 }
 
 
@@ -56,6 +61,7 @@ dependencies {
 
     compile 'com.google.zxing:core:3.2.1'
     compile 'com.google.zxing:javase:2.2'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
 tasks.withType(JavaCompile) {
