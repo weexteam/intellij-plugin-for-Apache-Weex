@@ -2,8 +2,8 @@ package com.darin.weex.utils
 
 import com.darin.weex.WeexAppConfig
 import com.darin.weex.WeexAppConfig.LOCAL_IP
-import com.darin.weex.utils.WeexCmd.AsyncRunCmd
-import com.darin.weex.utils.WeexCmd.SyncRunCmd
+import com.darin.weex.utils.WeexCmd.runCmdAsync
+import com.darin.weex.utils.WeexCmd.runCmdSync
 import com.darin.weex.weexToolKit.WeexToolKit
 import com.intellij.openapi.util.text.StringUtil
 import java.io.File
@@ -76,10 +76,10 @@ object WeexSdk {
                     return String.format(getCurrentServerWay(false).previewUrl, WeexAppConfig.getLocalHostIP(false), defaultWeexServerPort, name)
 
                 //HotReload
-                val process = WeexToolKit.getInstance().weexProcess
+                val process = WeexToolKit.instance.weexProcess
                 if (process == null || filePath != process.weexFilePath) {
 
-                    WeexToolKit.getInstance().syncDoStartWeex(filePath, startHotReloadCallback)
+                    WeexToolKit.instance.syncDoStartWeex(filePath, startHotReloadCallback)
 
                     return null
                 }
@@ -111,10 +111,10 @@ object WeexSdk {
                 if (isStatic)
                     return String.format(getCurrentServerWay(true).jsUrl, ip, defaultWeexServerPort, name)
 
-                val process = WeexToolKit.getInstance().weexProcess
+                val process = WeexToolKit.instance.weexProcess
 
                 if (process == null || filePath != process.weexFilePath) {
-                    WeexToolKit.getInstance().syncDoStartWeex(filePath, startHotReloadCallback)
+                    WeexToolKit.instance.syncDoStartWeex(filePath, startHotReloadCallback)
                     return null
                 }
 
@@ -133,14 +133,12 @@ object WeexSdk {
      * @param callback   callback will be invoked after transform completely
      */
     fun transform(weexScript: String, callback: WeexCmd.CmdExecuteCallback?) {
-        val transformCmd: String
-        if (false && WeexSdk.isWeexToolKitReady) {
-            transformCmd = WeexAppConfig.nodeInstallPath + File.separator + "weex " + WeexAppConfig.addDoubleQuotationMarks(weexScript) + " -o " + WeexAppConfig.addDoubleQuotationMarks(WeexAppConfig.TEMP_JS_FILE)
-        } else {
-            //Todo 自己编译模式
-            transformCmd = addNodePathToCmd(WeexAppConfig.EXE_TRANSFORMER_FILE) + " " + WeexAppConfig.addDoubleQuotationMarks(weexScript) + " -o " + WeexAppConfig.addDoubleQuotationMarks(WeexAppConfig.TEMP_JS_FILE)
-        }
-        AsyncRunCmd(transformCmd, callback, null, true)
+        val transformCmd: String = addNodePathToCmd(WeexAppConfig.EXE_TRANSFORMER_FILE) + " " + WeexAppConfig.addDoubleQuotationMarks(weexScript) + " -o " + WeexAppConfig.addDoubleQuotationMarks(WeexAppConfig.TEMP_JS_FILE)
+//        if (false && WeexSdk.isWeexToolKitReady) {
+//            transformCmd = WeexAppConfig.nodeInstallPath + File.separator + "weex " + WeexAppConfig.addDoubleQuotationMarks(weexScript) + " -o " + WeexAppConfig.addDoubleQuotationMarks(WeexAppConfig.TEMP_JS_FILE)
+//        } else {
+        //        }
+        runCmdAsync(transformCmd, callback, null, true)
     }
 
 
@@ -149,8 +147,8 @@ object WeexSdk {
 
      * @return usable port number
      */
-    private fun generateWeexServerPoat(): Int {
-        while (WeexUtils.isPortHasBeenUsed(defaultWeexServerPort.toLong())) {
+    private fun generateWeexServerPort(): Int {
+        while (WeexUtils.isPortHasBeenUsed(defaultWeexServerPort)) {
             defaultWeexServerPort++
         }
         return defaultWeexServerPort
@@ -164,15 +162,15 @@ object WeexSdk {
      */
     fun startServe(callback: WeexCmd.CmdExecuteCallback?) {
         stopServe()
-        val startServerCmd: String = addNodePathToCmd(WeexAppConfig.EXE_HTTP_SERVER_FILE) + " -p " + generateWeexServerPoat() + " " + WeexAppConfig.TEMP_JS_FILE
+        val startServerCmd: String = addNodePathToCmd(WeexAppConfig.EXE_HTTP_SERVER_FILE) + " -p " + generateWeexServerPort() + " " + WeexAppConfig.TEMP_JS_FILE
         //        if (false && WeexSdk.getInstance().isWeexToolKitReady()) {
-        //            startServerCmd = WeexAppConfig.getINSTANCE().getNodeInstallPath() + File.separator + "weex --port " + generateWeexServerPoat() + " --server " + WeexAppConfig.TEMP_JS_FILE;
+        //            startServerCmd = WeexAppConfig.getINSTANCE().getNodeInstallPath() + File.separator + "weex --port " + generateWeexServerPort() + " --server " + WeexAppConfig.TEMP_JS_FILE;
         //        } else {
         //        }
 
         WeexUtils.println(startServerCmd)
 
-        weexServerThread = AsyncRunCmd(startServerCmd, callback, null, true)
+        weexServerThread = runCmdAsync(startServerCmd, callback, null, true)
     }
 
     /**
@@ -191,21 +189,18 @@ object WeexSdk {
      */
     fun stopServe() {
         if (WeexSdk.isWeexToolKitReady) {
-            WeexToolKit.getInstance().stopWeexToolKitServer()
+            WeexToolKit.instance.stopWeexToolKitServer()
         }
 
-        if (weexServerThread != null) {
-            weexServerThread!!.cancel(true)
-            weexServerThread = null
-        }
+        weexServerThread?.cancel(true)
+        weexServerThread = null
 
         WeexCmd.shutdown()
         if (!WeexUtils.isWindows) {
-            val path = WeexAppConfig.DEFAULT_CONFIG_PATH
             WeexAppConfig.initStopServeShell(false)
 
-            val stopServeFile = File(path + File.separator + "stopServe")
-            SyncRunCmd("sh " + stopServeFile.path, false, null)
+            val stopServeFile = File(WeexAppConfig.DEFAULT_CONFIG_PATH + File.separator + "stopServe")
+            runCmdSync("sh " + stopServeFile.path, false, null)
         }
 
     }

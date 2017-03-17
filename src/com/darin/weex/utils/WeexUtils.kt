@@ -116,16 +116,16 @@ object WeexUtils {
      * *
      * @return true or not
      */
-    fun isPortHasBeenUsed(port: Long): Boolean {
+    fun isPortHasBeenUsed(port: Int): Boolean {
         if (port <= 0)
             return true
 
 
         if (WeexUtils.isWindows) {
-            val result = WeexCmd.SyncRunCmd("netstat -aon", false, null)
+            val result = WeexCmd.runCmdSync("netstat -aon", false, null)
             return result.contains(port.toString())
         } else {
-            return !StringUtil.isEmpty(WeexCmd.SyncRunCmd("lsof -i tcp:" + port, false, null))
+            return !StringUtil.isEmpty(WeexCmd.runCmdSync("lsof -i tcp:" + port, false, null))
         }
 
     }
@@ -137,7 +137,7 @@ object WeexUtils {
      * @return true means local server is on
      */
     val isServerOn: Boolean
-        get() = !WeexUtils.isWindows && WeexCmd.SyncRunCmd("lsof -i tcp:12580", false, null).contains("TCP *:12580 (LISTEN)")
+        get() = !WeexUtils.isWindows && WeexCmd.runCmdSync("lsof -i tcp:12580", false, null).contains("TCP *:12580 (LISTEN)")
 
 
     /**
@@ -197,7 +197,7 @@ object WeexUtils {
                     }
 
                     if (WeexSdk.isWeexToolKitReady) {
-                        currentStatus = WeexUtils.isPortHasBeenUsed(WeexSdk.defaultWeexServerPort.toLong())
+                        currentStatus = WeexUtils.isPortHasBeenUsed(WeexSdk.defaultWeexServerPort)
                     } else {
                         currentStatus = WeexUtils.isServerOn
                     }

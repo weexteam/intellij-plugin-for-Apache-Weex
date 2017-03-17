@@ -3,7 +3,7 @@ package com.darin.weex
 
 import com.darin.weex.language.WeexFileChangeAdapter
 import com.darin.weex.utils.WeexCmd
-import com.darin.weex.utils.WeexCmd.SyncRunCmd
+import com.darin.weex.utils.WeexCmd.runCmdSync
 import com.darin.weex.utils.WeexCmd.destroyConsoleView
 import com.darin.weex.utils.WeexCmd.inputStreamToString
 import com.darin.weex.utils.WeexConstants
@@ -11,19 +11,16 @@ import com.darin.weex.utils.WeexSdk
 import com.darin.weex.utils.WeexUtils
 import com.darin.weex.utils.WeexUtils.isWindows
 import com.darin.weex.utils.WeexUtils.startCheckServerStatus
-import com.darin.weex.utils.WeexUtils.unzip
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.util.io.ZipUtil
+import org.eclipse.jdt.internal.compiler.ProcessTaskManager
 import java.io.*
 import java.net.InetAddress
 import java.util.*
 import java.util.regex.Pattern
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
 
 /**
  * Created by darin on 5/23/16.
@@ -68,12 +65,12 @@ object WeexAppConfig : Properties() {
 
         CONFIG_PATH = PathManager.getConfigPath() + File.separator + "options/weex.properties"
 
-        Thread(object : Runnable {
+
+        WeexConstants.invokeLater(object : Runnable {
             override fun run() {
                 val weex_tool = File(DEFAULT_CONFIG_PATH)
                 if (weex_tool.exists())
                     FileUtil.delete(weex_tool)
-
 
                 weex_tool.mkdirs()
 
@@ -87,24 +84,18 @@ object WeexAppConfig : Properties() {
                 WeexUtils.unzip(this.javaClass.getResourceAsStream(renderFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
 
                 WeexUtils.unzip(this.javaClass.getResourceAsStream(serverFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
-
             }
-        }).start()
-
-
-        //setPermission();
-
+        })
     }
 
     private fun setPermission() {
-        WeexCmd.SyncRunCmd("chmod -R 777 " + WeexAppConfig.DEFAULT_CONFIG_PATH + "/*", false, null)
+        WeexCmd.runCmdSync("chmod -R 777 " + WeexAppConfig.DEFAULT_CONFIG_PATH + "/*", false, null)
     }
 
     /**
      * create the default temp script output path
      */
     private fun initOutputPath(): Boolean {
-
         val weexJsOutputPath = File(WeexAppConfig.TEMP_JS_FILE)
 
         if (weexJsOutputPath.exists())
@@ -290,7 +281,7 @@ object WeexAppConfig : Properties() {
     private // except 127.0.0.1
     val localHostIpFromCmd: String?
         get() {
-            val ifconfig = SyncRunCmd(WeexConstants.CMD_GET_IP, false, null).trim { it <= ' ' }
+            val ifconfig = runCmdSync(WeexConstants.CMD_GET_IP, false, null).trim { it <= ' ' }
             val m = ipPattern.matcher(ifconfig)
             var ip: String? = null
             try {

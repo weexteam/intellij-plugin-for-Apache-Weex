@@ -54,7 +54,7 @@ object WeexShow {
                 .setClickHandler({
                     val url = dialog.name
                     if (!StringUtil.isEmpty(url) && url.startsWith("http"))
-                        WeexCmd.SyncRunCmd("open " + url, false, null)
+                        WeexCmd.runCmdSync("open " + url, false, null)
                 }, true)
                 .setHideOnClickOutside(true)
                 .createBalloon()

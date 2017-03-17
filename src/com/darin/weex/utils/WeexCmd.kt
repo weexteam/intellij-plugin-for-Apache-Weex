@@ -27,9 +27,9 @@ object WeexCmd {
         fun done(processResult: String)
     }
 
-    fun AsyncRunCmd(cmd: String, callback: CmdExecuteCallback?, workDir: File?, showConsole: Boolean): Future<*> {
+    fun runCmdAsync(cmd: String, callback: CmdExecuteCallback?, workDir: File?, showConsole: Boolean): Future<*> {
         return threadPool.submit {
-            val result = SyncRunCmd(cmd, showConsole, workDir)
+            val result = runCmdSync(cmd, showConsole, workDir)
             callback?.done(result)
         }
     }
@@ -41,7 +41,7 @@ object WeexCmd {
      * *
      * @param workDir
      */
-    fun SyncRunCmd(cmd: String, showConsole: Boolean, workDir: File?): String {
+    fun runCmdSync(cmd: String, showConsole: Boolean, workDir: File?): String {
         WeexUtils.println(cmd)
         var result = ""
         try {

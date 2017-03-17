@@ -1,9 +1,6 @@
 package com.darin.weex.ui.actions.logsAndQrCode
 
-import com.darin.weex.utils.WeexCmd
-import com.darin.weex.utils.WeexQRCodeUtil
-import com.darin.weex.utils.WeexSdk
-import com.darin.weex.utils.WeexUtils
+import com.darin.weex.utils.*
 import com.darin.weex.weexToolKit.WeexProcess
 import com.darin.weex.weexToolKit.WeexToolKit
 import com.intellij.openapi.actionSystem.AnAction
@@ -22,7 +19,7 @@ import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 
-import com.darin.weex.utils.WeexCmd.SyncRunCmd
+import com.darin.weex.utils.WeexCmd.runCmdSync
 
 /**
  * Created by darin on 5/23/16.
@@ -88,14 +85,19 @@ open class WeexBaseToggleStateAction internal constructor(private val isShowLogi
             if (isForShoutao) {
                 url[0] = urlPrefix + WeexSdk.getJsUrl(file.path, true, null, true)
             } else {
-                url[0] = WeexSdk.getJsUrl(file.path, false, WeexToolKit.StartHotReloadCallback {
-                    ApplicationManager.getApplication().invokeLater {
-                        url[0] = WeexSdk.getJsUrl(file.path, false, null, true)!!
-                        Platform.runLater {
-                            WeexUtils.println(url[0])
-                            rePainQrCode(url[0])
-                        }
+                url[0] = WeexSdk.getJsUrl(file.path, false, object : WeexToolKit.StartHotReloadCallback {
+                    override fun startOk(process: WeexProcess) {
+                        WeexConstants.invokeLater(object : Runnable {
+                            override fun run() {
+                                url[0] = WeexSdk.getJsUrl(file.path, false, null, true)!!
+                                Platform.runLater {
+                                    WeexUtils.println(url[0])
+                                    rePainQrCode(url[0])
+                                }
+                            }
+                        })
                     }
+
                 }, true)!!
             }
         }
@@ -149,7 +151,7 @@ open class WeexBaseToggleStateAction internal constructor(private val isShowLogi
                 .setClickHandler({
                     val url = qrCodeImage!!.name
                     if (!StringUtil.isEmpty(url) && url.startsWith("http"))
-                        WeexCmd.SyncRunCmd("open " + url, false, null)
+                        WeexCmd.runCmdSync("open " + url, false, null)
                 }, true)
                 .setHideOnClickOutside(true)
                 .createBalloon()
