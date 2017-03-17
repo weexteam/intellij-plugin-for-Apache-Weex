@@ -23,7 +23,7 @@ class WeexPreviewSettings internal constructor() {
 
     init {
         mNodePathSelectButton!!.addActionListener {
-            val choosePath = WeexUtils.chooseNpmPath(component!!)
+            val choosePath = WeexUtils.chooseNpmPath(mMainPanel!!)
             if (!StringUtil.isEmpty(choosePath)) {
                 mNodeInstallPath!!.text = choosePath
                 mNodeInstallPathString = choosePath!!
@@ -33,7 +33,7 @@ class WeexPreviewSettings internal constructor() {
     }
 
 
-    internal fun save() {
+    fun save() {
 
         var npmPath = mNodeInstallPath!!.text.trim { it <= ' ' }
 

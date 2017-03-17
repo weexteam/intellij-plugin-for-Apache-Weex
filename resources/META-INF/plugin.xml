@@ -2,16 +2,29 @@
     <id>com.weex.darin</id>
     <name>Weex</name>
     <version>1.1</version>
-    <vendor email="taobao-mobile-test@service.alibaba.com" url="http://alibaba.github.io/weex/">Alibaba</vendor>
+    <vendor email="taobao-mobile-test@service.alibaba.com" url="https://github.com/weexteam/weex-intellij-plugin">Darin</vendor>
     <category>HTML/JavaScript Development</category>
     <depends>com.intellij.modules.xml</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.platform</depends>
     <depends>JavaScript</depends>
 
-    <description>></description>
 
-    <change-notes>
+    <description><![CDATA[
+  <ul>
+  <li>Will transform weex file to js automatically</li>
+  <li>Render weex file automatically</li>
+  <li>Support display rendering result on playground or taobao App</li>
+  <li>Support Webstorm，Intellij Idea，Android Studio and so on</li>
+  <li>JavaScript syntax support </li>
+ </ul>
+]]></description>
+
+    <change-notes><![CDATA[
+    1. Transform faster And render faster <br>
+    2. Support Windows<br>
+    3. Reduce this size of this plugin</p>
+]]>
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->

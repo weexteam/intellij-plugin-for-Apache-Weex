@@ -42,7 +42,7 @@ class WeexApplicationSettings : SearchableConfigurable {
     }
 
     override fun createComponent(): JComponent? {
-        return form.component
+        return form.mMainPanel
     }
 
     override fun isModified(): Boolean {
