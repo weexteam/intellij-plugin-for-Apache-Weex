@@ -1,6 +1,7 @@
 package com.darin.weex.ui.actions.editorLayout
 
 import com.darin.weex.ui.preview.WeexFxPreviewEditor
+import com.darin.weex.utils.WeexConstants
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -10,15 +11,14 @@ import com.intellij.openapi.project.DumbAware
 /**
  * Created by darin on 5/23/16.
  */
-open class WeexBaseChangeSplitLayoutAction protected constructor(private val myLayoutToSet: WeexFxPreviewEditor.SplitEditorLayout?) : AnAction(), DumbAware, Toggleable {
+open class WeexBaseChangeSplitLayoutAction constructor(private var myLayoutToSet: WeexFxPreviewEditor.SplitEditorLayout?) : AnAction(), DumbAware, Toggleable {
 
 
     override fun update(e: AnActionEvent?) {
         super.update(e)
 
-
         val splitFileEditor = findSplitEditor(e!!)
-        e.presentation.isEnabled = splitFileEditor != null
+        e.presentation.isEnabled = splitFileEditor != null && WeexConstants.hasJavaFx()
 
         if (myLayoutToSet != null && splitFileEditor != null) {
             e.presentation.putClientProperty(Toggleable.SELECTED_PROPERTY, splitFileEditor.currentEditorLayout == myLayoutToSet)

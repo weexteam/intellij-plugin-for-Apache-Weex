@@ -134,6 +134,7 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
                     myToolbarWrapper = WeexSplitEditorToolbar(if (WeexConstants.hasJavaFx() || splitter == null) mMainEditor.component else splitter!!)
                     mFinalView.add(myToolbarWrapper, BorderLayout.NORTH)
                     mFinalView.updateUI()
+                    rePaintView(currentEditorLayout)
                 }
                 if (isOn) {
                     TransformTasks.instance.addTransformTask(mCurrentModifyFile)

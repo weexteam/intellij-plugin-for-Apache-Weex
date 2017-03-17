@@ -1,6 +1,9 @@
 package com.darin.weex.ui.actions.logsAndQrCode
 
-import com.darin.weex.utils.*
+import com.darin.weex.utils.WeexConstants
+import com.darin.weex.utils.WeexQRCodeUtil
+import com.darin.weex.utils.WeexSdk
+import com.darin.weex.utils.WeexUtils
 import com.darin.weex.weexToolKit.WeexProcess
 import com.darin.weex.weexToolKit.WeexToolKit
 import com.intellij.openapi.actionSystem.AnAction
@@ -13,14 +16,13 @@ import com.intellij.ui.awt.RelativePoint
 import java.awt.Desktop
 import java.awt.Point
 import java.net.URI
-import java.net.URL
 import javax.swing.ImageIcon
 import javax.swing.JLabel
 
 /**
  * Created by darin on 5/23/16.
  */
-open class WeexBaseToggleStateAction internal constructor(private val isShowLoginfos: Boolean, isForShoutao: Boolean) : AnAction() {
+open class WeexBaseToggleStateAction constructor(private val isShowLoginfos: Boolean, isForShoutao: Boolean) : AnAction() {
     private val urlPrefix = "http://t.cn?_wx_tpl="
 
     private var isForShoutao = true
@@ -145,7 +147,7 @@ open class WeexBaseToggleStateAction internal constructor(private val isShowLogi
         if (isForShoutao)
             title += "or Taobao app"
 
-        if(!WeexConstants.hasJavaFx())
+        if (!WeexConstants.hasJavaFx())
             title = "Click to view the Weex page"
 
         qrCodeImage = getQrCodeImage(url)
