@@ -10,7 +10,10 @@ import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.awt.RelativePoint
+import java.awt.Desktop
 import java.awt.Point
+import java.net.URI
+import java.net.URL
 import javax.swing.ImageIcon
 import javax.swing.JLabel
 
@@ -29,6 +32,7 @@ open class WeexBaseToggleStateAction internal constructor(private val isShowLogi
 
     private var qrCodeImage: JLabel? = null
     private var qrCode: Balloon? = null
+    private var currentPreviewUrl: String? = null
 
 
     override fun actionPerformed(anActionEvent: AnActionEvent) {
@@ -77,13 +81,14 @@ open class WeexBaseToggleStateAction internal constructor(private val isShowLogi
         if (WeexSdk.isWeexToolKitReady) {
             if (isForShoutao) {
                 url[0] = urlPrefix + WeexSdk.getJsUrl(file.path, true, null, true)
+                currentPreviewUrl = WeexSdk.getPreviewUrl(filePath = file.path, isWebview = true, startHotReloadCallback = null)
             } else {
                 url[0] = WeexSdk.getJsUrl(file.path, false, object : WeexToolKit.StartHotReloadCallback {
                     override fun startOk(process: WeexProcess) {
                         WeexConstants.invokeLater(object : Runnable {
                             override fun run() {
                                 url[0] = WeexSdk.getJsUrl(file.path, false, null, true)!!
-                                WeexConstants.invokeLater(object :Runnable {
+                                WeexConstants.invokeLater(object : Runnable {
                                     override fun run() {
                                         WeexUtils.println(url[0])
                                         rePainQrCode(url[0])
@@ -139,17 +144,31 @@ open class WeexBaseToggleStateAction internal constructor(private val isShowLogi
         var title = "Scan with playground"
         if (isForShoutao)
             title += "or Taobao app"
+
+        if(!WeexConstants.hasJavaFx())
+            title = "Click to view the Weex page"
+
         qrCodeImage = getQrCodeImage(url)
         val factory = JBPopupFactory.getInstance()
 
         return factory.createDialogBalloonBuilder(qrCodeImage!!, title)
                 .setClickHandler({
-                    val url = qrCodeImage!!.name
-                    if (!StringUtil.isEmpty(url) && url.startsWith("http"))
-                        WeexCmd.runCmdSync("open " + url, false, null)
+                    val tempUrl = qrCodeImage!!.name
+                    if (!StringUtil.isEmpty(tempUrl) && tempUrl.startsWith("http")) {
+                        val openUrl: String
+                        if (WeexConstants.hasJavaFx() || currentPreviewUrl == null) {
+                            openUrl = tempUrl.replace(urlPrefix, "")
+                        } else {
+                            openUrl = currentPreviewUrl!!
+                        }
+                        Desktop.getDesktop().browse(URI(openUrl))
+                        //WeexCmd.runCmdSync("open $openUrl", false, null)
+                    }
+
                 }, true)
                 .setHideOnClickOutside(true)
                 .createBalloon()
     }
 
 }
+

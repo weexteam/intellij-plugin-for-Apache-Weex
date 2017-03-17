@@ -32,7 +32,7 @@ object WeexAppConfig : Properties() {
 
         initPaths()
 
-        val file = File(CONFIG_PATH!!)
+        val file = File(CONFIG_PATH)
 
         try {
             if (!file.exists())
@@ -51,38 +51,37 @@ object WeexAppConfig : Properties() {
      * initialize the paths of server, jsFile, transformer..
      */
     private fun initPaths() {
-
+        CONFIG_PATH = PathManager.getConfigPath() + File.separator + "options/weex.properties"
         DEFAULT_CONFIG_PATH = PathManager.getConfigPath() + File.separator + "weex-tool"
 
         TEMP_JS_FILE = File(DEFAULT_CONFIG_PATH, "weex-html5").absolutePath
 
-        EXE_HTTP_SERVER_FILE = addDoubleQuotationMarks(File(DEFAULT_CONFIG_PATH, "serve/bin/serve").absolutePath)
+        http_server_exe_path = addDoubleQuotationMarks(File(DEFAULT_CONFIG_PATH, "serve/bin/serve").absolutePath)
 
-        EXE_TRANSFORMER_FILE = addDoubleQuotationMarks(File(DEFAULT_CONFIG_PATH, "weex-transformer/bin/transformer.js").absolutePath)
+        transformer_exe_path = addDoubleQuotationMarks(File(DEFAULT_CONFIG_PATH, "weex-transformer/bin/transformer.js").absolutePath)
 
         WeexUtils.println(TEMP_JS_FILE)
 
-        CONFIG_PATH = PathManager.getConfigPath() + File.separator + "options/weex.properties"
-
-
-        Thread(object : Runnable {
+        WeexConstants.invokeLater(object : Runnable {
             override fun run() {
                 val weex_tool = File(DEFAULT_CONFIG_PATH)
-                if (weex_tool.exists())
-                    FileUtil.delete(weex_tool)
-
-                weex_tool.mkdirs()
+                if (!weex_tool.exists())
+                    weex_tool.mkdirs()
 
                 initOutputPath()
                 /**
                  * un zip render && transformer && server
                  */
 
-                WeexUtils.unzip(this.javaClass.getResourceAsStream(transformerFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
+                if (transformer_exe_path.isNotEmpty() && !File(transformer_exe_path.replace("\"","")).exists()) {
+                    WeexUtils.unzip(this.javaClass.getResourceAsStream(transformerFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
+                }
 
-                WeexUtils.unzip(this.javaClass.getResourceAsStream(renderFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
+                if (render_exe_path.isNotEmpty() && !File(render_exe_path.replace("\"","")).exists())
+                    WeexUtils.unzip(this.javaClass.getResourceAsStream(renderFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
 
-                WeexUtils.unzip(this.javaClass.getResourceAsStream(serverFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
+                if (http_server_exe_path.isNotEmpty() && !File(http_server_exe_path.replace("\"","")).exists())
+                    WeexUtils.unzip(this.javaClass.getResourceAsStream(serverFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
 
                 initStopServeShell(true)
 
@@ -92,7 +91,7 @@ object WeexAppConfig : Properties() {
                 }
                 envReady = true
             }
-        }).start()
+        })
     }
 
     private fun setPermission() {
@@ -104,11 +103,9 @@ object WeexAppConfig : Properties() {
      */
     private fun initOutputPath(): Boolean {
         val weexJsOutputPath = File(WeexAppConfig.TEMP_JS_FILE)
-
-        if (weexJsOutputPath.exists())
-            FileUtil.delete(weexJsOutputPath)
-
-        return weexJsOutputPath.mkdirs()
+        if (!weexJsOutputPath.exists())
+            weexJsOutputPath.mkdirs()
+        return true
     }
 
 
@@ -170,13 +167,21 @@ object WeexAppConfig : Properties() {
 
 
     var webviewWidth: Int
-        get() = Integer.valueOf(getProperty(KEY_WEBVIEW_WIDTH, 669.toString()))!!
+        get() = Integer.valueOf(getProperty(KEY_WEBVIEW_WIDTH, 669.toString()))
         set(width) = setPropertyAndSave(KEY_WEBVIEW_WIDTH, width.toString())
 
     var webviewHeight: Int
-        get() = Integer.valueOf(getProperty(KEY_WEBVIEW_HEIGHT, 1200.toString()))!!
+        get() = Integer.valueOf(getProperty(KEY_WEBVIEW_HEIGHT, 1200.toString()))
         set(height) = setPropertyAndSave(KEY_WEBVIEW_HEIGHT, height.toString())
-
+    var http_server_exe_path: String
+        get() = getProperty(KEY_HTTP_SERVER_PATH, "")
+        set(value) = setPropertyAndSave(KEY_HTTP_SERVER_PATH, value)
+    var transformer_exe_path: String
+        get() = getProperty(KEY_TRANSFORMER_PATH, "")
+        set(value) = setPropertyAndSave(KEY_TRANSFORMER_PATH, value)
+    var render_exe_path: String
+        get() = getProperty(KEY_RENDER_PATH, "")
+        set(value) = setPropertyAndSave(KEY_RENDER_PATH, value)
 
     /**
      * @return the Weex installed path that has been set
@@ -231,7 +236,7 @@ object WeexAppConfig : Properties() {
 
     private fun save() {
         try {
-            store(FileOutputStream(CONFIG_PATH!!), "config")
+            store(FileOutputStream(CONFIG_PATH), "config")
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -272,8 +277,7 @@ object WeexAppConfig : Properties() {
     private val localHostIpFromJava: String
         get() {
             try {
-                val addr = InetAddress.getLocalHost()
-                return addr.hostAddress
+                return InetAddress.getLocalHost().hostAddress
             } catch (ex: Exception) {
                 return LOCAL_IP
             }
@@ -347,6 +351,8 @@ object WeexAppConfig : Properties() {
     private val KEY_TRANSFORMER_PATH = "transformer-path"
     private val KEY_WEBVIEW_WIDTH = "web-width"
     private val KEY_WEBVIEW_HEIGHT = "web-height"
+    private val KEY_HTTP_SERVER_PATH = "http-server-path"
+    private val KEY_RENDER_PATH = "render-path"
 
 
     /**
@@ -367,10 +373,6 @@ object WeexAppConfig : Properties() {
     lateinit var DEFAULT_CONFIG_PATH: String
 
     lateinit var TEMP_JS_FILE: String
-
-    lateinit var EXE_HTTP_SERVER_FILE: String
-    lateinit var EXE_TRANSFORMER_FILE: String
-
 
     private val renderFilePath = "/render/render.zip"
     private val serverFilePath = "/render/server.zip"

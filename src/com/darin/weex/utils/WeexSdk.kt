@@ -133,7 +133,7 @@ object WeexSdk {
      * @param callback   callback will be invoked after transform completely
      */
     fun transform(weexScript: String, callback: WeexCmd.CmdExecuteCallback?) {
-        val transformCmd: String = addNodePathToCmd(WeexAppConfig.EXE_TRANSFORMER_FILE) + " " + WeexAppConfig.addDoubleQuotationMarks(weexScript) + " -o " + WeexAppConfig.addDoubleQuotationMarks(WeexAppConfig.TEMP_JS_FILE)
+        val transformCmd: String = addNodePathToCmd(WeexAppConfig.transformer_exe_path) + " " + WeexAppConfig.addDoubleQuotationMarks(weexScript) + " -o " + WeexAppConfig.addDoubleQuotationMarks(WeexAppConfig.TEMP_JS_FILE)
 //        if (false && WeexSdk.isWeexToolKitReady) {
 //            transformCmd = WeexAppConfig.nodeInstallPath + File.separator + "weex " + WeexAppConfig.addDoubleQuotationMarks(weexScript) + " -o " + WeexAppConfig.addDoubleQuotationMarks(WeexAppConfig.TEMP_JS_FILE)
 //        } else {
@@ -162,7 +162,7 @@ object WeexSdk {
      */
     fun startServe(callback: WeexCmd.CmdExecuteCallback?) {
         stopServe()
-        val startServerCmd: String = addNodePathToCmd(WeexAppConfig.EXE_HTTP_SERVER_FILE) + " -p " + generateWeexServerPort() + " " + WeexAppConfig.TEMP_JS_FILE
+        val startServerCmd: String = addNodePathToCmd(WeexAppConfig.http_server_exe_path) + " -p " + generateWeexServerPort() + " " + WeexAppConfig.TEMP_JS_FILE
         //        if (false && WeexSdk.getInstance().isWeexToolKitReady()) {
         //            startServerCmd = WeexAppConfig.getINSTANCE().getNodeInstallPath() + File.separator + "weex --port " + generateWeexServerPort() + " --server " + WeexAppConfig.TEMP_JS_FILE;
         //        } else {
