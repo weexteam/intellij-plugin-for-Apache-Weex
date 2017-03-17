@@ -34,7 +34,7 @@ object WeexQRCodeUtil {
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8")
         hints.put(EncodeHintType.MARGIN, 1)
 
-        var bitMatrix: BitMatrix? = null
+        val bitMatrix: BitMatrix
         try {
             bitMatrix = MultiFormatWriter().encode(content,
                     BarcodeFormat.QR_CODE,
@@ -46,6 +46,6 @@ object WeexQRCodeUtil {
             return null
         }
 
-        return MatrixToImageWriter.toBufferedImage(bitMatrix!!)
+        return MatrixToImageWriter.toBufferedImage(bitMatrix)
     }
 }

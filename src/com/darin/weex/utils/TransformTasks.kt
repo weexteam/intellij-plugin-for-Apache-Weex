@@ -5,7 +5,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.Alarm
-import javafx.application.Platform
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -94,10 +93,7 @@ class TransformTasks private constructor() : Disposable {
 
 
     private fun runLater(runnable: Runnable) {
-        /**
-         * jfx thread
-         */
-        Platform.runLater(runnable)
+        ApplicationManager.getApplication().invokeLater(runnable)
     }
 
     companion object {

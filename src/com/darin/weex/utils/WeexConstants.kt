@@ -11,4 +11,15 @@ object WeexConstants {
     fun invokeLater(runnable: Runnable) {
         ApplicationManager.getApplication().invokeLater(runnable)
     }
+
+    fun hasJavaFx(): Boolean {
+        val className = "javafx.embed.swing.JFXPanel"
+        var javaFx: Class<*>? = null
+        try {
+            javaFx = Class.forName(className)
+        } catch (e: Exception) {
+            return false
+        }
+        return javaFx != null
+    }
 }

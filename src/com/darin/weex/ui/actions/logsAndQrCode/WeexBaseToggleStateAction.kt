@@ -6,20 +6,13 @@ import com.darin.weex.weexToolKit.WeexToolKit
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.awt.RelativePoint
-import javafx.application.Platform
-
-import javax.swing.*
-import java.awt.*
-import java.awt.event.ActionEvent
-import java.awt.event.ActionListener
-
-import com.darin.weex.utils.WeexCmd.runCmdSync
+import java.awt.Point
+import javax.swing.ImageIcon
+import javax.swing.JLabel
 
 /**
  * Created by darin on 5/23/16.
@@ -90,10 +83,13 @@ open class WeexBaseToggleStateAction internal constructor(private val isShowLogi
                         WeexConstants.invokeLater(object : Runnable {
                             override fun run() {
                                 url[0] = WeexSdk.getJsUrl(file.path, false, null, true)!!
-                                Platform.runLater {
-                                    WeexUtils.println(url[0])
-                                    rePainQrCode(url[0])
-                                }
+                                WeexConstants.invokeLater(object :Runnable {
+                                    override fun run() {
+                                        WeexUtils.println(url[0])
+                                        rePainQrCode(url[0])
+                                    }
+
+                                })
                             }
                         })
                     }
@@ -122,19 +118,19 @@ open class WeexBaseToggleStateAction internal constructor(private val isShowLogi
         qrCodeImage!!.repaint()
     }
 
-    private fun getQrCodeImage(url: String): JLabel {
-        var url = url
+    private fun getQrCodeImage(url: String?): JLabel {
+        var tempUrl = url
 
-        if (StringUtil.isEmpty(url)) {
-            url = "Please reScan this qrCode again"
+        if (StringUtil.isEmpty(tempUrl)) {
+            tempUrl = "Please reScan this qrCode again"
         }
         val ic = ImageIcon()
 
-        ic.image = WeexQRCodeUtil.Encode_QR_CODE(url)
+        ic.image = WeexQRCodeUtil.Encode_QR_CODE(tempUrl!!)
 
         val qrcode = JLabel(ic)
 
-        qrcode.name = url
+        qrcode.name = tempUrl
 
         return qrcode
     }
@@ -143,9 +139,8 @@ open class WeexBaseToggleStateAction internal constructor(private val isShowLogi
         var title = "Scan with playground"
         if (isForShoutao)
             title += "or Taobao app"
-        qrCodeImage = getQrCodeImage(url!!)
+        qrCodeImage = getQrCodeImage(url)
         val factory = JBPopupFactory.getInstance()
-        val relativePoint: RelativePoint
 
         return factory.createDialogBalloonBuilder(qrCodeImage!!, title)
                 .setClickHandler({

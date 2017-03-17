@@ -2,6 +2,7 @@ package com.darin.weex.ui.preview
 
 import com.darin.weex.WeexAppConfig
 import com.darin.weex.utils.TransformTasks
+import com.darin.weex.utils.WeexConstants
 import com.darin.weex.utils.WeexUtils
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter
 import com.intellij.ide.structureView.StructureViewBuilder
@@ -36,23 +37,21 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
 
     private val mUpdatePreviewWidthAlarm = Alarm(Alarm.ThreadToUse.SWING_THREAD, this)
     lateinit private var mCurrentModifyFile: VirtualFile
-    lateinit private var mPreviewPanel: JPanel
+    private var mPreviewPanel: JPanel? = null
     lateinit private var mMainEditor: FileEditor
-    private var mWebviewContainer: JFXPanel? = null
-    lateinit private var splitter: JBSplitter
+    private var mJavaFxView: JFXPanel? = null
+    private var splitter: JBSplitter? = null
     lateinit private var mFinalView: JPanel
     /**
      * @return get current split layout
      */
     var currentEditorLayout = SplitEditorLayout.SPLIT
         private set
-    var myToolbarWrapper: WeexSplitEditorToolbar? = null
+    lateinit var myToolbarWrapper: WeexSplitEditorToolbar
         private set
-    private var weexBrowser: WeexBrowser? = null
-    private var listerner: WeexUtils.onLocalServerStatusChangeListener? = null
+    lateinit private var weexBrowser: WeexBrowser
+    lateinit private var listerner: WeexUtils.onLocalServerStatusChangeListener
     private var mUpdatePreviewWidthRunnable: Runnable? = null
-
-    private var mJfxInitOk = false
 
     init {
         initData(project, file)
@@ -66,22 +65,23 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
     }
 
     private fun initPreviewUi() {
-        mWebviewContainer = JFXPanelWrapper() // initializing javafx
-        mPreviewPanel.add(mWebviewContainer)
+        mPreviewPanel = JPanel(FlowLayout(FlowLayout.LEFT))
+        mJavaFxView = JFXPanelWrapper() // initializing javafx
+        mPreviewPanel!!.add(mJavaFxView)
         rePaintView(currentEditorLayout)
 
         splitter = JBSplitter(false, WeexAppConfig.splitProportion, 0.15f, 0.85f)
 
         initWebview(webviewWidth, webviewHeight)
-        splitter.splitterProportionKey = ""
+        splitter!!.splitterProportionKey = ""
 
-        splitter.firstComponent = mMainEditor.component
-        splitter.secondComponent = mPreviewPanel
-        splitter.addPropertyChangeListener(PropertyChangeListener {
+        splitter!!.firstComponent = mMainEditor.component
+        splitter!!.secondComponent = mPreviewPanel
+        splitter!!.addPropertyChangeListener(PropertyChangeListener {
             if (mUpdatePreviewWidthRunnable != null)
                 mUpdatePreviewWidthAlarm.cancelRequest(mUpdatePreviewWidthRunnable!!)
 
-            val second = splitter.secondComponent
+            val second = splitter!!.secondComponent
             val width = second.width
             val height = second.height
 
@@ -97,7 +97,7 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
 
                     initWebview(width, height)
 
-                    WeexAppConfig.splitProportion = (splitter.proportion)
+                    WeexAppConfig.splitProportion = (splitter!!.proportion)
                     WeexAppConfig.webviewHeight = (height)
                     WeexAppConfig.webviewWidth = (width)
 
@@ -107,30 +107,32 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
             if (!mUpdatePreviewWidthAlarm.isDisposed)
                 mUpdatePreviewWidthAlarm.addRequest(mUpdatePreviewWidthRunnable!!, 20L)
         })
-        myToolbarWrapper = WeexSplitEditorToolbar(splitter)
+        myToolbarWrapper = WeexSplitEditorToolbar(splitter!!)
+        mFinalView.remove(myToolbarWrapper)
         mFinalView.remove(mMainEditor.component)
-        mFinalView.add(myToolbarWrapper!!, BorderLayout.NORTH)
+        mFinalView.add(myToolbarWrapper, BorderLayout.NORTH)
         mFinalView.add(splitter, BorderLayout.CENTER)
         mFinalView.updateUI()
+        TransformTasks.instance.addTransformTask(mCurrentModifyFile)
+    }
+
+
+    private fun initUi() {
+        myToolbarWrapper = WeexSplitEditorToolbar(mMainEditor.component)
+        mFinalView = JPanel(BorderLayout())
+        mFinalView.add(myToolbarWrapper, BorderLayout.NORTH)
+        mFinalView.add(mMainEditor.component, BorderLayout.CENTER)
+
+
         listerner = object : WeexUtils.onLocalServerStatusChangeListener {
             override fun onLocalServerStatusChange(isOn: Boolean) {
                 ApplicationManager.getApplication().invokeLater {
                     /**
                      * update the server button
                      */
-                    /**
-                     * update the server button
-                     */
-                    /**
-                     * update the server button
-                     */
-
-                    /**
-                     * update the server button
-                     */
-                    mFinalView.remove(myToolbarWrapper!!)
-                    myToolbarWrapper = WeexSplitEditorToolbar(splitter)
-                    mFinalView.add(myToolbarWrapper!!, BorderLayout.NORTH)
+                    mFinalView.remove(myToolbarWrapper)
+                    myToolbarWrapper = WeexSplitEditorToolbar(if (WeexConstants.hasJavaFx() || splitter == null) mMainEditor.component else splitter!!)
+                    mFinalView.add(myToolbarWrapper, BorderLayout.NORTH)
                     mFinalView.updateUI()
                 }
                 if (isOn) {
@@ -141,46 +143,39 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
             }
 
         }
-        mJfxInitOk = true
 
         WeexUtils.addServerChangeListener(listerner)
-
-        TransformTasks.instance.addTransformTask(mCurrentModifyFile)
-    }
-
-
-    private fun initUi() {
-        mFinalView = JPanel(BorderLayout())
-        mFinalView.add(mMainEditor.component)
-
-        mPreviewPanel = JPanel(FlowLayout(FlowLayout.LEFT))
 
         /**
          * new JFXPanel() may block the ui thread, so we invoke it later
          */
-        ApplicationManager.getApplication().invokeLater { initPreviewUi() }
+        if (WeexConstants.hasJavaFx())
+            WeexConstants.invokeLater(object : Runnable {
+                override fun run() {
+                    initPreviewUi()
+                }
+
+            })
 
     }
 
     private fun reLoad() {
-        TransformTasks.instance.addLoadUrlTask(mCurrentModifyFile.path)
+        if (WeexConstants.hasJavaFx())
+            TransformTasks.instance.addLoadUrlTask(mCurrentModifyFile.path)
     }
 
     private fun initWebviewWithComponent() {
-        webviewWidth = (mFinalView.width * (1 - splitter.proportion)).toInt()
+        webviewWidth = (mFinalView.width * (1 - splitter!!.proportion)).toInt()
         initWebview(webviewWidth, mFinalView.height)
     }
 
 
     private fun initWebview(width: Int, height: Int) {
-        if (mWebviewContainer == null)
-            return
-
         runLater(Runnable {
             weexBrowser = WeexBrowser(width, height, mCurrentModifyFile.path)
 
-            val scene = Scene(weexBrowser!!, width.toDouble(), height.toDouble(), Color.web("#666970"))
-            mWebviewContainer!!.scene = scene
+            val scene = Scene(weexBrowser, width.toDouble(), height.toDouble(), Color.web("#666970"))
+            mJavaFxView!!.scene = scene
             reLoad()
         })
     }
@@ -270,8 +265,8 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
     /**
      * @return Preview edtior component
      */
-    private val priviewComponent: JComponent
-        get() = mPreviewPanel
+    private val previewComponent: JComponent
+        get() = mPreviewPanel!!
 
     /**
      * reset the layout with the spliteditorlayout
@@ -279,11 +274,11 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
      * @param layout [SplitEditorLayout] the editor layout
      */
     fun rePaintView(layout: SplitEditorLayout) {
-        if (!mJfxInitOk)
+        if (!WeexConstants.hasJavaFx())
             return
         editComponent.isVisible = layout.showEditor
-        priviewComponent.isVisible = layout.showPreview
-        myToolbarWrapper!!.refresh()
+        previewComponent.isVisible = layout.showPreview
+        myToolbarWrapper.refresh()
         currentEditorLayout = layout
     }
 

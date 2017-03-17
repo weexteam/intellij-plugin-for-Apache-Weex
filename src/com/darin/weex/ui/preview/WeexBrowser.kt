@@ -3,6 +3,7 @@ package com.darin.weex.ui.preview
 import com.darin.weex.utils.TransformTasks
 import com.darin.weex.utils.WeexSdk
 import com.darin.weex.utils.WeexUtils
+import com.sun.javafx.application.PlatformImpl
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.geometry.HPos
@@ -10,7 +11,6 @@ import javafx.geometry.VPos
 import javafx.scene.control.Hyperlink
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Region
-import javafx.scene.web.WebEngine
 import javafx.scene.web.WebView
 
 /**
@@ -70,7 +70,7 @@ class WeexBrowser(width: Int, height: Int, val weexFilePath: String) : Region() 
 
     fun loadUrl(url: String?) {
         WeexUtils.println("Will load url = " + url)
-        webEngine.load(url)
+        PlatformImpl.runLater { webEngine.load(url) }
     }
 
 
