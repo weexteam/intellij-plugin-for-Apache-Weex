@@ -3,9 +3,9 @@ package com.darin.weex
 
 import com.darin.weex.language.WeexFileChangeAdapter
 import com.darin.weex.utils.WeexCmd
-import com.darin.weex.utils.WeexCmd.runCmdSync
 import com.darin.weex.utils.WeexCmd.destroyConsoleView
 import com.darin.weex.utils.WeexCmd.inputStreamToString
+import com.darin.weex.utils.WeexCmd.runCmdSync
 import com.darin.weex.utils.WeexConstants
 import com.darin.weex.utils.WeexSdk
 import com.darin.weex.utils.WeexUtils
@@ -16,7 +16,6 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFileManager
-import org.eclipse.jdt.internal.compiler.ProcessTaskManager
 import java.io.*
 import java.net.InetAddress
 import java.util.*
@@ -66,7 +65,7 @@ object WeexAppConfig : Properties() {
         CONFIG_PATH = PathManager.getConfigPath() + File.separator + "options/weex.properties"
 
 
-        WeexConstants.invokeLater(object : Runnable {
+        Thread(object : Runnable {
             override fun run() {
                 val weex_tool = File(DEFAULT_CONFIG_PATH)
                 if (weex_tool.exists())
@@ -84,8 +83,16 @@ object WeexAppConfig : Properties() {
                 WeexUtils.unzip(this.javaClass.getResourceAsStream(renderFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
 
                 WeexUtils.unzip(this.javaClass.getResourceAsStream(serverFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
+
+                initStopServeShell(true)
+
+                if (shouldStartServer) {
+                    WeexSdk.startServe(null)
+                    startCheckServerStatus()
+                }
+                envReady = true
             }
-        })
+        }).start()
     }
 
     private fun setPermission() {
@@ -117,16 +124,16 @@ object WeexAppConfig : Properties() {
             nodeInstallPath = nodeRealPath
         }
 
-
-        initStopServeShell(true)
-
-        WeexSdk.startServe(null)
-
-        startCheckServerStatus()
+        if (envReady) {
+            WeexSdk.startServe(null)
+            startCheckServerStatus()
+        } else {
+            shouldStartServer = true
+        }
 
         try {
             val projects = ProjectManager.getInstance().openProjects
-            if (projects.size > 0) {
+            if (projects.isNotEmpty()) {
                 WeexCmd.initConsoleView(projects[0])
             }
         } catch (exception: Exception) {
@@ -415,5 +422,6 @@ object WeexAppConfig : Properties() {
     private val IPREG = "(?<=inet ).*(?= netmask)"
     private val ipPattern = Pattern.compile(IPREG)
 
-
+    var envReady = false
+    var shouldStartServer = false
 }

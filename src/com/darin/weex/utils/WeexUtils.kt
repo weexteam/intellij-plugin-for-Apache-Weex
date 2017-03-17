@@ -206,8 +206,7 @@ object WeexUtils {
                         continue
                     }
 
-                    for (listerner in listerners)
-                        listerner.onLocalServerStatusChange(currentStatus)
+                    listerners.forEach { it.onLocalServerStatusChange(currentStatus) }
 
                     lastStatus = currentStatus
                 }
