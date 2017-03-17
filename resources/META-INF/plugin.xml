@@ -7,7 +7,6 @@
     <depends>com.intellij.modules.xml</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.platform</depends>
-    <depends>JavaScript</depends>
 
 
     <description><![CDATA[
@@ -15,7 +14,7 @@
   <li>Will transform weex file to js automatically</li>
   <li>Render weex file automatically</li>
   <li>Support display rendering result on playground or taobao App</li>
-  <li>Support Webstorm，Intellij Idea，Android Studio and so on</li>
+  <li>Support Webstorm, Intellij Idea, Android Studio and so on</li>
   <li>JavaScript syntax support </li>
  </ul>
 ]]></description>

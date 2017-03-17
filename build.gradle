@@ -32,7 +32,7 @@ repositories {
 
 intellij {
     version = 'IU-163.10154.41'
-    plugins = ['JavaScriptLanguage', 'CSS','intelliLang','javaFx']
+    plugins = ['intelliLang']
     sandboxDirectory = project.rootDir.canonicalPath + "/.sandbox"
     pluginName = 'Weex'
     updateSinceUntilBuild = false

@@ -59,7 +59,7 @@ object WeexAppConfig : Properties() {
         http_server_exe_path = addDoubleQuotationMarks(File(DEFAULT_CONFIG_PATH, "serve/bin/serve").absolutePath)
 
         transformer_exe_path = addDoubleQuotationMarks(File(DEFAULT_CONFIG_PATH, "weex-transformer/bin/transformer.js").absolutePath)
-
+        render_exe_path = TEMP_JS_FILE
         WeexUtils.println(TEMP_JS_FILE)
 
         WeexConstants.invokeLater(object : Runnable {
@@ -73,14 +73,14 @@ object WeexAppConfig : Properties() {
                  * un zip render && transformer && server
                  */
 
-                if (transformer_exe_path.isNotEmpty() && !File(transformer_exe_path.replace("\"","")).exists()) {
+                if (transformer_exe_path.isNotEmpty() && !File(transformer_exe_path.replace("\"", "")).exists()) {
                     WeexUtils.unzip(this.javaClass.getResourceAsStream(transformerFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
                 }
 
-                if (render_exe_path.isNotEmpty() && !File(render_exe_path.replace("\"","")).exists())
+                if (render_exe_path.isNotEmpty() && !File(render_exe_path.replace("\"", ""), "index.html").exists())
                     WeexUtils.unzip(this.javaClass.getResourceAsStream(renderFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
 
-                if (http_server_exe_path.isNotEmpty() && !File(http_server_exe_path.replace("\"","")).exists())
+                if (http_server_exe_path.isNotEmpty() && !File(http_server_exe_path.replace("\"", "")).exists())
                     WeexUtils.unzip(this.javaClass.getResourceAsStream(serverFilePath), WeexAppConfig.DEFAULT_CONFIG_PATH)
 
                 initStopServeShell(true)
