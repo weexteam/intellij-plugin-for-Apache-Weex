@@ -13,7 +13,6 @@ import com.darin.weex.utils.WeexUtils.isWindows
 import com.darin.weex.utils.WeexUtils.startCheckServerStatus
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import java.io.*
@@ -294,7 +293,7 @@ object WeexAppConfig : Properties() {
         get() {
             val ifconfig = runCmdSync(WeexConstants.CMD_GET_IP, false, null).trim { it <= ' ' }
             val m = ipPattern.matcher(ifconfig)
-            var ip: String? = null
+            var ip: String?
             try {
                 while (m.find()) {
                     ip = m.group()
