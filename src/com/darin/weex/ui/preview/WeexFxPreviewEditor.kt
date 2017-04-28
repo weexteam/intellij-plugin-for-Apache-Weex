@@ -61,7 +61,7 @@ class WeexFxPreviewEditor(project: Project, file: VirtualFile) : UserDataHolderB
     private fun initData(p: Project, file: VirtualFile) {
         this.mCurrentModifyFile = file
         mMainEditor = mMainEditorProvider.createEditor(p, file)
-        this.putUserData(PARENT_SPLIT_KEY, this)
+        mMainEditor.putUserData(PARENT_SPLIT_KEY, this)
     }
 
     private fun initPreviewUi() {

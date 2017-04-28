@@ -104,12 +104,12 @@
                     description="Sets weex editor layout to show editor and preview in split"
                     icon="/icons/layout/Editor_preview.png">
             </action>
-            <action class="com.darin.weex.ui.actions.editorLayout.WeexPreviewOnlyLayoutChangeAction"
-                    id="com.darin.weex.ui.actions.editorLayout.WeexPreviewOnlyLayoutChangeAction"
-                    text="Show preview only"
-                    description="Sets weex editor layout to show preview only"
-                    icon="/icons/layout/Preview_only.png">
-            </action>
+            <!--<action class="com.darin.weex.ui.actions.editorLayout.WeexPreviewOnlyLayoutChangeAction"-->
+                    <!--id="com.darin.weex.ui.actions.editorLayout.WeexPreviewOnlyLayoutChangeAction"-->
+                    <!--text="Show preview only"-->
+                    <!--description="Sets weex editor layout to show preview only"-->
+                    <!--icon="/icons/layout/Preview_only.png">-->
+            <!--</action>-->
 
         </group>
 

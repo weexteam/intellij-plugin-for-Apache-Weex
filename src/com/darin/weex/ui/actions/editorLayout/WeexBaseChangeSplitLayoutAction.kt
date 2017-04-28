@@ -11,7 +11,7 @@ import com.intellij.openapi.project.DumbAware
 /**
  * Created by darin on 5/23/16.
  */
-open class WeexBaseChangeSplitLayoutAction constructor(private var myLayoutToSet: WeexFxPreviewEditor.SplitEditorLayout?) : AnAction(), DumbAware, Toggleable {
+open class WeexBaseChangeSplitLayoutAction constructor(private val myLayoutToSet: WeexFxPreviewEditor.SplitEditorLayout) : AnAction(), DumbAware, Toggleable {
 
 
     override fun update(e: AnActionEvent?) {
@@ -20,22 +20,25 @@ open class WeexBaseChangeSplitLayoutAction constructor(private var myLayoutToSet
         val splitFileEditor = findSplitEditor(e!!)
         e.presentation.isEnabled = splitFileEditor != null && WeexConstants.hasJavaFx()
 
-        if (myLayoutToSet != null && splitFileEditor != null) {
-            e.presentation.putClientProperty(Toggleable.SELECTED_PROPERTY, splitFileEditor.currentEditorLayout == myLayoutToSet)
+        if (splitFileEditor != null) {
+            e.presentation.putClientProperty(Toggleable.SELECTED_PROPERTY, myLayoutToSet.equals(splitFileEditor.currentEditorLayout))
         }
     }
 
-    override fun actionPerformed(anActionEvent: AnActionEvent) {
+    override fun actionPerformed(anActionEvent: AnActionEvent?) {
+        if (anActionEvent == null)
+            return
+
         anActionEvent.presentation.putClientProperty(Toggleable.SELECTED_PROPERTY, true)
-
-        val project = anActionEvent.project
-
         val edit = findSplitEditor(anActionEvent)
         edit?.rePaintView(myLayoutToSet!!)
     }
 
 
-    fun findSplitEditor(e: AnActionEvent): WeexFxPreviewEditor? {
+    fun findSplitEditor(e: AnActionEvent?): WeexFxPreviewEditor? {
+        if (e == null)
+            return null
+
         val editor = e.getData(PlatformDataKeys.FILE_EDITOR)
         if (editor is WeexFxPreviewEditor) {
             return editor
