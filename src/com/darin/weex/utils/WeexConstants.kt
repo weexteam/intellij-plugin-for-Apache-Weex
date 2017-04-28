@@ -53,7 +53,7 @@ object WeexConstants {
     }
 
     fun hasJavaFx(): Boolean {
-        return hasJavaFxInSystem() || hasJavaFxInDefaultDownloadPath(testpath)
+        return hasJavaFxInSystem()// || hasJavaFxInDefaultDownloadPath(testpath)
     }
 
     fun hasJavaFxInSystem(): Boolean {
